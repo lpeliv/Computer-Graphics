@@ -172,6 +172,11 @@ int main()
 
     float* vArray = vertices.data();
     unsigned int* vTriangles = triangles.data();
+
+    for (int i = 1; i <= triangles.size(); i++) {
+        vTriangles[i] = vTriangles[i]-1;
+    }
+
     int n_verts = vertices.size();
     int n_faces = triangles.size();
 
