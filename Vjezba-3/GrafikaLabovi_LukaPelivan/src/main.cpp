@@ -18,9 +18,10 @@ int main()
   
     Model model("res/models/rectangle.obj");
     Shader shader("res/shaders/vShader.glsl", "res/shaders/fShader.glsl");
-    Texture tex("res/textures/container.jpg");
+    //Texture tex("res/textures/container.jpg");
 
-    Texture secondTex("res/textures/awesomeface.png");
+    //Comment above to disable default texture and uncoment line 24
+    Texture tex("res/textures/awesomeface.png");
 
     Renderer render;
     while (!window.isClosed())
