@@ -123,7 +123,7 @@ void Mesh::Draw(const Shader& shader, const Texture& texture) const
     glBindVertexArray(m_RenderID);
 
     glDrawElements(GL_TRIANGLES, m_Indices.size(), GL_UNSIGNED_INT, 0);
-
+    
     glBindVertexArray(0);
 }
 
