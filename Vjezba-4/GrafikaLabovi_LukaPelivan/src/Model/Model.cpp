@@ -3,13 +3,13 @@
 
 #include <assert.h>
 
-Vertex::Vertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 texCor) 
-	: position(pos), normal(norm), textureCordinates(texCor) { }
+Vertex::Vertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 texCor)
+    : position(pos), normal(norm), textureCordinates(texCor) { }
 
 Mesh::Mesh(const std::string& meshPath)
 {
-	LoadMesh(meshPath);
-	SetupMesh();
+    LoadMesh(meshPath);
+    SetupMesh();
 }
 
 Mesh::~Mesh()
@@ -24,6 +24,10 @@ void Mesh::LoadMesh(const std::string& meshPath)
     std::vector<glm::vec3> positions;
     std::vector<glm::vec3> normals;
     std::vector<glm::vec2> texCord;
+    std::vector<int> temp_indices;
+
+    normals.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
+    texCord.push_back(glm::vec2(0.0f, 0.0f));
 
     std::stringstream streamBuf;
     std::string readLine;
@@ -33,8 +37,9 @@ void Mesh::LoadMesh(const std::string& meshPath)
     if (!objFile)
         std::cerr << "FILE COULD NOT OPEN\n";
 
-    float x, y, z;
-    int f1, f2, f3;
+    float x = 0, y = 0, z = 0;
+    std::string temp;
+    int index = 0;
     while (std::getline(objFile, readLine))
     {
         streamBuf.clear();
@@ -45,6 +50,7 @@ void Mesh::LoadMesh(const std::string& meshPath)
         if (attribute.compare("v") == 0)
         {
             std::getline(streamBuf, readLine);
+
             streamBuf.clear();
             streamBuf.str(readLine);
 
@@ -75,17 +81,40 @@ void Mesh::LoadMesh(const std::string& meshPath)
             streamBuf.clear();
             streamBuf.str(readLine);
 
-            streamBuf >> f1 >> f2 >> f3;
-            m_Indices.push_back(f1 - 1);
-            m_Indices.push_back(f2 - 1);
-            m_Indices.push_back(f3 - 1);
+
+            while (streamBuf >> temp) {
+                x = 0, y = 0, z = 0;
+                std::vector<std::string> elems;
+                std::istringstream iss(temp);
+                std::string item;
+                while (std::getline(iss, item, '/')) {
+                    *std::back_inserter(elems)++ = item;
+                }
+
+                x = stoi(elems[0]);
+                if (elems.size() > 1 && elems[1].compare("") != 0)
+                    y = stoi(elems[1]);
+                if (elems.size() > 2 && elems[2].compare("") != 0)
+                    z = stoi(elems[2]);
+                if (elems.size() > 3)
+                    std::cerr << "Formatting not supported!" << std::endl;
+
+
+                m_Indices.push_back(index++);
+
+                temp_indices.push_back(x - 1);
+                temp_indices.push_back(y);
+                temp_indices.push_back(z);
+            }
         }
     }
     objFile.close();
 
-    for (int pos = 0; pos < positions.size(); pos++)
-    {
-        m_Mesh.push_back(Vertex(positions[pos], normals[pos], texCord[pos]));
+    for (int f = 0; f < temp_indices.size(); f += 3) {
+        x = temp_indices[f];
+        y = temp_indices[f + 1];
+        z = temp_indices[f + 2];
+        m_Mesh.push_back(Vertex(positions[x], normals[y], texCord[z]));
     }
 }
 
@@ -123,12 +152,12 @@ void Mesh::Draw(const Shader& shader, const Texture& texture) const
     glBindVertexArray(m_RenderID);
 
     glDrawElements(GL_TRIANGLES, m_Indices.size(), GL_UNSIGNED_INT, 0);
-    
+
     glBindVertexArray(0);
 }
 
 
-Model::Model(const std::string& meshPath) 
+Model::Model(const std::string& meshPath)
     : m_Mesh(std::make_unique<Mesh>(meshPath)) { }
 
 Model::~Model() {}
