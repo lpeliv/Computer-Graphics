@@ -71,7 +71,8 @@ int main()
         view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
         
         glm::mat4 projection;
-        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+        //Commented for Task 4-4
+        //projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
         
         //Comented for task 3 - 3D
         /*int modelLoc = glGetUniformLocation(shader.GetID(), "model");
@@ -81,8 +82,9 @@ int main()
         int viewLoc = glGetUniformLocation(shader.GetID(), "view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));*/
 
-        int projectionLoc = glGetUniformLocation(shader.GetID(), "projection");
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        //Commented for Task 4-4
+        /*int projectionLoc = glGetUniformLocation(shader.GetID(), "projection");
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));*/
         //--------------------------------------------
         
         //Task 3 - 3D
@@ -153,12 +155,12 @@ int main()
 
         //--------------------------------------------
 
-        //Task 4-4 not working
+        //Task 4-4 use AWSD Keys to rotate, ortho / perspective
         //--------------------------------------------
-        glm::mat4 trans = glm::mat4(1.0f);
+        glm::mat4 trans = glm::mat4(1.0f);/*
         trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
         unsigned int transformLoc = glGetUniformLocation(shader.GetID(), "transform");
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));*/
 
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
@@ -169,8 +171,12 @@ int main()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
+        //projection = glm::ortho(-1.5f, 3.0f, -1.0f, 2.0f, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+        int projectionLoc = glGetUniformLocation(shader.GetID(), "projection");
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
         processInputJerJeRokovSmece(window.GetWindow(), &cameraPos, &cameraFront, &cameraUp, deltaTime);
-        
         //--------------------------------------------
 
         //Commented for Task 4-2
