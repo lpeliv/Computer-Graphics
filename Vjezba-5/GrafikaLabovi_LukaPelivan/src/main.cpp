@@ -101,14 +101,14 @@ int main()
 
 		//-----------------------
 
-		for (unsigned int i = 0; i < 2; i++)
+		for (unsigned int i = 0; i < 1; i++)
 		{
 			modelM = glm::translate(modelM, objectPositions[i]);
 			float angle = 10.0f * i;
-			modelM = glm::rotate(modelM, glm::radians(angle), 
+			modelM = glm::rotate(modelM, glm::radians(angle),
 				glm::vec3(1.0f, 0.3f, 0.5f));
 			shader.SetUniform4x4("model", modelM);
-			model2.Draw(shader, tex);
+			model.Draw(shader, tex);
 		}
 		glm::mat4 trans = glm::mat4(1.0f);
 		view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
@@ -116,28 +116,26 @@ int main()
 		int viewLoc = glGetUniformLocation(shader.GetID(), "view");
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-		projection = glm::perspective(glm::radians(45.0f), 
+		projection = glm::perspective(glm::radians(45.0f),
 			800.0f / 600.0f, 0.1f, 100.0f);
 		int projectionLoc = glGetUniformLocation(shader.GetID(), "projection");
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 		//second model
 		shaderS.Bind();
+		
 		glm::mat4 modelm = glm::mat4(1.0f);
 		modelm = glm::mat4(1.0f);
 		modelm = glm::translate(modelm, lightPos);
 		modelm = glm::scale(modelm, glm::vec3(0.2f));
-
+		
 		int viewLocS = glGetUniformLocation(shaderS.GetID(), "view");
 		glUniformMatrix4fv(viewLocS, 1, GL_FALSE, glm::value_ptr(view));
 
-		//projection = glm::perspective(glm::radians(45.0f),
-		//	800.0f / 600.0f, 0.1f, 100.0f);
 		int projectionLocS = glGetUniformLocation(shaderS.GetID(), "projection");
 		glUniformMatrix4fv(projectionLocS, 1, GL_FALSE, glm::value_ptr(projection));
 
-		glBindVertexArray(lightCubeVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		model2.Draw(shaderS, tex);
 		shader.Bind();
 
 		float currentFrame = glfwGetTime();
