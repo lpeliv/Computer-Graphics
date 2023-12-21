@@ -3,13 +3,13 @@
 
 #include <assert.h>
 
-Vertex::Vertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 texCor)
-    : position(pos), normal(norm), textureCordinates(texCor) { }
+Vertex::Vertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 texCor) 
+	: position(pos), normal(norm), textureCordinates(texCor) { }
 
 Mesh::Mesh(const std::string& meshPath)
 {
-    LoadMesh(meshPath);
-    SetupMesh();
+	LoadMesh(meshPath);
+	SetupMesh();
 }
 
 Mesh::~Mesh()
@@ -81,6 +81,17 @@ void Mesh::LoadMesh(const std::string& meshPath)
             streamBuf.clear();
             streamBuf.str(readLine);
 
+            streamBuf >> temp;
+            x = stoi(temp.substr(0, temp.find('/')))-1;
+            streamBuf >> temp;
+            y = stoi(temp.substr(0, temp.find('/')))-1;
+            streamBuf >> temp;
+            z = stoi(temp.substr(0, temp.find('/')))-1;
+            
+            glm::vec3 normal = glm::normalize(glm::cross(positions[y] - positions[x], positions[z] - positions[x]));
+
+            streamBuf.clear();
+            streamBuf.str(readLine);
 
             while (streamBuf >> temp) {
                 x = 0, y = 0, z = 0;
@@ -94,7 +105,7 @@ void Mesh::LoadMesh(const std::string& meshPath)
                 x = stoi(elems[0]);
                 if (elems.size() > 1 && elems[1].compare("") != 0)
                     y = stoi(elems[1]);
-                if (elems.size() > 2 && elems[2].compare("") != 0)
+                if (elems.size() > 2 && elems[2].compare("")!=0)
                     z = stoi(elems[2]);
                 if (elems.size() > 3)
                     std::cerr << "Formatting not supported!" << std::endl;
@@ -103,18 +114,26 @@ void Mesh::LoadMesh(const std::string& meshPath)
                 m_Indices.push_back(index++);
 
                 temp_indices.push_back(x - 1);
-                temp_indices.push_back(y);
+                if (y != 0) {
+                    temp_indices.push_back(y);
+                }
+                else {
+                    normals.push_back(normal);
+                    temp_indices.push_back(normals.size() - 1);
+                }
                 temp_indices.push_back(z);
             }
         }
     }
     objFile.close();
 
-    for (int f = 0; f < temp_indices.size(); f += 3) {
+    for (int f = 0; f < temp_indices.size(); f+=3) {
         x = temp_indices[f];
         y = temp_indices[f + 1];
         z = temp_indices[f + 2];
+
         m_Mesh.push_back(Vertex(positions[x], normals[y], texCord[z]));
+    
     }
 }
 
@@ -157,7 +176,7 @@ void Mesh::Draw(const Shader& shader, const Texture& texture) const
 }
 
 
-Model::Model(const std::string& meshPath)
+Model::Model(const std::string& meshPath) 
     : m_Mesh(std::make_unique<Mesh>(meshPath)) { }
 
 Model::~Model() {}

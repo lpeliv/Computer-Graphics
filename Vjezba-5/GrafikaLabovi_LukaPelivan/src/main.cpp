@@ -116,14 +116,33 @@ int main()
 		int viewLoc = glGetUniformLocation(shader.GetID(), "view");
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-		float currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
-
 		projection = glm::perspective(glm::radians(45.0f), 
 			800.0f / 600.0f, 0.1f, 100.0f);
 		int projectionLoc = glGetUniformLocation(shader.GetID(), "projection");
 		glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
+		//second model
+		shaderS.Bind();
+		glm::mat4 modelm = glm::mat4(1.0f);
+		modelm = glm::mat4(1.0f);
+		modelm = glm::translate(modelm, lightPos);
+		modelm = glm::scale(modelm, glm::vec3(0.2f));
+
+		int viewLocS = glGetUniformLocation(shaderS.GetID(), "view");
+		glUniformMatrix4fv(viewLocS, 1, GL_FALSE, glm::value_ptr(view));
+
+		//projection = glm::perspective(glm::radians(45.0f),
+		//	800.0f / 600.0f, 0.1f, 100.0f);
+		int projectionLocS = glGetUniformLocation(shaderS.GetID(), "projection");
+		glUniformMatrix4fv(projectionLocS, 1, GL_FALSE, glm::value_ptr(projection));
+
+		glBindVertexArray(lightCubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		shader.Bind();
+
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
 
 		processInputJerJeRokovSmece(window.GetWindow(), 
 			&cameraPos, &cameraFront, &cameraUp, deltaTime);
